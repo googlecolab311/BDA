@@ -1,4 +1,5 @@
 from mrjob.job import MRJob
+from mrjob.step import MRStep
 from datetime import datetime
 import json
 
@@ -31,7 +32,25 @@ class LogAnalysis(MRJob):
                 total += (t - login_time).total_seconds()
                 login_time = None
 
-        yield user, round(total / 3600, 2)  
+        yield None, (round(total / 3600, 2), user)
+
+    def reduce_sorter(self,key,values):
+        sorted_vals = sorted(values, reverse=True)
+        max_hours, max_user = sorted_vals[0]     
+        yield "User with maximum period on system:",f"{max_user} ({max_hours} hours)"
+        for hours, user in sorted_vals:
+            yield user, hours
+
+    def steps(self):
+        return [
+            MRStep(
+                mapper=self.mapper,
+                reducer=self.reducer
+            ),
+            MRStep(
+                reducer=self.reduce_sorter
+            )
+        ]
 
 if __name__ == "__main__":
     LogAnalysis.run()
