@@ -64,10 +64,10 @@ plt.close("all")
 print("Saved:", os.path.join(OUTDIR, "iris_multidimensional_pairplot.png"))
 
 from scipy.cluster.hierarchy import dendrogram, linkage
-X = df_iris[["sepal length (cm)", "sepal width (cm)", "petal length (cm)", "petal width (cm)"]]
+X = df_iris[["sepal length (cm)", "petal length (cm)"]]
 linked = linkage(X, method="ward")
 fig = plt.figure(figsize=(10, 5))
-dendrogram(linked, labels=df_iris['species'].values, leaf_rotation=90, leaf_font_size=8)
+dendrogram(linked, truncate_mode="level",p=5,labels=df_iris['species'].values, leaf_rotation=90, leaf_font_size=8)
 plt.title("Hierarchical Clustering Dendrogram (Iris Dataset)")
 savefig(fig, "iris_dendrogram.png")
 
